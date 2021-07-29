@@ -21,8 +21,6 @@ Shader "Unlit/Week001"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			// make fog work
-			#pragma multi_compile_fog
 
 			#include "UnityCG.cginc"
 
@@ -57,11 +55,6 @@ Shader "Unlit/Week001"
 
 			float invLerp(float from, float to, float value){
 				return (value - from) / (to - from);
-			}
-
-			float remap(float origFrom, float origTo, float targetFrom, float targetTo, float value){
-				float rel = invLerp(origFrom, origTo, value);
-				return lerp(targetFrom, targetTo, rel);
 			}
 
 			float4 frag (v2f i) : SV_Target
