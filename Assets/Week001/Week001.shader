@@ -79,8 +79,8 @@ Shader "Unlit/Week001"
 
 				if (_EdgeWidth || _EdgeSoftness) { // avoid div by zero
 					float e = abs(mask - dissolve);
-					float w = 1 - saturate(invLerp(hardEdge, softEdge, e));
-					o = lerp(o, _EdgeColor,  w);
+					float w = invLerp(hardEdge, softEdge, e);
+					o = lerp(_EdgeColor, o,  saturate(w));
 				}
 
 				return o;
