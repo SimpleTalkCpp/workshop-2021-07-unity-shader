@@ -7,6 +7,11 @@ Shader "Unlit/Week001"
 		_MaskTex ("MaskTexture", 2D) = "white" {}
 
 		_Dissolve("Dissolve", range(0,1) ) = 0.0
+		_Mode("Mode [0:Normal] [1:Radial] [2:Rhombus]", Int) = 1
+
+		_PivotX("PivotX", range(0,1)) = 0.5
+		_PivotY("PivotY", range(0,1)) = 0.5
+
 		_EdgeWidth("Edge Width", range(0,1)) = 0.0
 		_EdgeSoftness("Edge Softness", range(0,1)) = 0.0
 		_EdgeColor("Edge Color", Color) = (1,0,0,1)
@@ -32,15 +37,21 @@ Shader "Unlit/Week001"
 
 			struct v2f
 			{
-				float2 uv : TEXCOORD0;
 				float4 vertex : SV_POSITION;
+				float2 uv : TEXCOORD0;
+				float2 maskUv : TEXCOORD1;
 			};
 
 			sampler2D _MainTex;
 			sampler2D _MainTex2;
 			sampler2D _MaskTex;
+			float4    _MaskTex_ST;
 
 			float _Dissolve;
+			float _PivotX;
+			float _PivotY;
+			int _Mode;
+
 			float _EdgeWidth;
 			float _EdgeSoftness;
 			float4 _EdgeColor;
@@ -50,6 +61,7 @@ Shader "Unlit/Week001"
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = v.uv;
+				o.maskUv = TRANSFORM_TEX(v.uv, _MaskTex);
 				return o;
 			}
 
@@ -64,16 +76,20 @@ Shader "Unlit/Week001"
 				float hardEdge = _EdgeWidth / 2;
 				float softEdge = hardEdge + _EdgeSoftness + epsilon;
 
+				if (_Mode == 1) { // Radial
+					_Dissolve = saturate(_Dissolve / length(i.uv - float2(_PivotX, _PivotY)));
+				} else if (_Mode == 2) { // Rhombus
+					float2 a = i.uv - float2(_PivotX, _PivotY);
+					_Dissolve = saturate(_Dissolve / (abs(a.x) + abs(a.y)));
+				}
+
 				float dissolve = lerp(-softEdge, 1 + softEdge, _Dissolve);
 
 				float4 tex  = tex2D(_MainTex,  i.uv);
 				float4 tex2 = tex2D(_MainTex2, i.uv);
-				float  mask = tex2D(_MaskTex, i.uv).r;
+				float  mask = tex2D(_MaskTex, i.maskUv).r;
 
-				if (0) { // debug
-					tex  = float4(0,1,1,1);
-					tex2 = float4(0,1,0,1);
-				}
+//				return float4(mask, mask, mask, 1);
 
 				float4 o = lerp(tex, tex2, step(mask, dissolve));
 
