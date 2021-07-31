@@ -87,7 +87,7 @@ Shader "Unlit/Week001"
 
 				float4 tex  = tex2D(_MainTex,  i.uv);
 				float4 tex2 = tex2D(_MainTex2, i.uv);
-				float  mask = tex2D(_MaskTex, i.maskUv).r;
+				float  mask = 1 - tex2D(_MaskTex, i.maskUv).r;
 
 //				return float4(mask, mask, mask, 1);
 

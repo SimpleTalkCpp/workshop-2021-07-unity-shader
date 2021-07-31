@@ -98,10 +98,10 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _Disolve: 0.608
-    - _Dissolve: 0.187
+    - _Dissolve: 0.364
     - _DstBlend: 0
-    - _EdgeSoftness: 0.037
-    - _EdgeWidth: 0.01
+    - _EdgeSoftness: 0.059
+    - _EdgeWidth: 0.015
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
@@ -110,7 +110,7 @@ Material:
     - _Mode: 2
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _PivotX: 0.5
+    - _PivotX: 0.358
     - _PivotY: 0.5
     - _QueueOffset: 0
     - _RadialMode: 1
