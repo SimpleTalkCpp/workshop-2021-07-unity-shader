@@ -83,12 +83,14 @@ Shader "Unlit/Week001"
 					_Dissolve = saturate(_Dissolve / (abs(a.x) + abs(a.y)));
 				}
 
+//				return float4(_Dissolve, 0,0, 1);
+
 				float dissolve = lerp(-softEdge, 1 + softEdge, _Dissolve);
 
 				float4 tex  = tex2D(_MainTex,  i.uv);
 				float4 tex2 = tex2D(_MainTex2, i.uv);
-				float  mask = 1 - tex2D(_MaskTex, i.maskUv).r;
 
+				float  mask = 1 - tex2D(_MaskTex, i.maskUv).r;
 //				return float4(mask, mask, mask, 1);
 
 				float4 o = lerp(tex, tex2, step(mask, dissolve));
