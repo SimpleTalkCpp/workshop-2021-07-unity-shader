@@ -77,10 +77,12 @@ Shader "Unlit/Week001"
 				float softEdge = hardEdge + _EdgeSoftness + epsilon;
 
 				if (_Mode == 1) { // Radial
-					_Dissolve = saturate(_Dissolve / length(i.uv - float2(_PivotX, _PivotY)));
+					float distance = length(i.uv - float2(_PivotX, _PivotY));
+					_Dissolve = saturate(_Dissolve / max(distance, epsilon));
 				} else if (_Mode == 2) { // Rhombus
 					float2 a = i.uv - float2(_PivotX, _PivotY);
-					_Dissolve = saturate(_Dissolve / (abs(a.x) + abs(a.y)));
+					float distance = abs(a.x) + abs(a.y);
+					_Dissolve = saturate(_Dissolve / max(distance, epsilon));
 				}
 
 //				return float4(_Dissolve, 0,0, 1);
