@@ -78,11 +78,11 @@ Shader "Unlit/Week001"
 
 				if (_Mode == 1) { // Radial
 					float distance = length(i.uv - float2(_PivotX, _PivotY));
-					_Dissolve = saturate(_Dissolve / max(distance, epsilon));
+					_Dissolve = saturate(_Dissolve / max(distance, epsilon)); // epsilon to avoid div by zero
 				} else if (_Mode == 2) { // Rhombus
 					float2 a = i.uv - float2(_PivotX, _PivotY);
 					float distance = abs(a.x) + abs(a.y);
-					_Dissolve = saturate(_Dissolve / max(distance, epsilon));
+					_Dissolve = saturate(_Dissolve / max(distance, epsilon)); // epsilon to avoid div by zero
 				}
 
 //				return float4(_Dissolve, 0,0, 1);
