@@ -47,7 +47,13 @@ Shader "Unlit/PlotGraph"
 			}
 
 			float func(float x) {
-				return frac(x * x);
+				float t = abs(frac(x) * 2 - 1);
+				return t;
+
+				float v = t*t*(3.0 - (2.0*t));
+				return v;
+				// return abs(x - _Param.x);
+				//return step(_Param.x, x);
 			}
 
 			float4 frag (v2f i) : SV_Target
