@@ -19,7 +19,7 @@ public class Week002_Trail : MonoBehaviour
 		public Vector3 pos0;
 		public Vector3 pos1;
 		public double time;
-		public bool breakdown;
+		public bool isBreakdown;
 	}
 	
 	List<Node> Nodes = new List<Node>();
@@ -30,27 +30,11 @@ public class Week002_Trail : MonoBehaviour
 	List<ushort>  meshIndices  = new List<ushort>();
 
 	MeshFilter meshFilter;
-	MeshRenderer meshRenderer;
 	Mesh mesh;
 
 	void Start() {
 		Application.targetFrameRate = TargetFrameRate;
-
-		if (!meshFilter) {
-			meshFilter = gameObject.GetComponent<MeshFilter>();
-			if (!meshFilter) {
-				meshFilter = gameObject.AddComponent<MeshFilter>();
-				meshFilter.name = "MeshFilter";
-			}
-		}
-
-		if (!meshRenderer) {
-			meshRenderer = gameObject.GetComponent<MeshRenderer>();
-			if (!meshRenderer) {
-				meshRenderer = gameObject.AddComponent<MeshRenderer>();
-				meshRenderer.name = "MeshRenderer";
-			}
-		}
+		meshFilter = gameObject.GetComponent<MeshFilter>();
 
 		if (!mesh) {
 			mesh = new Mesh();
@@ -58,9 +42,9 @@ public class Week002_Trail : MonoBehaviour
 		}
 	}
 
-#if true
+#if UNITY_EDITOR
 	void OnDrawGizmos_Node(Node node) {
-		Gizmos.color = node.breakdown ? Color.blue : Color.red;
+		Gizmos.color = node.isBreakdown ? Color.blue : Color.red;
 		Gizmos.DrawLine(node.pos0, node.pos1);
 	}
 
@@ -126,7 +110,7 @@ public class Week002_Trail : MonoBehaviour
 		}
 
 		var mid = new Node();
-		mid.breakdown = true;
+		mid.isBreakdown = true;
 		mid.time = (last.time + node.time) / 2;
 		mid.pos0 = mid0;
 		mid.pos1 = mid0 + (mid1 - mid0).normalized * Width;
@@ -136,6 +120,7 @@ public class Week002_Trail : MonoBehaviour
 	}
 
 	void UpdateMesh() {
+		if (!meshFilter) return;
 		meshFilter.sharedMesh = mesh;
 
 		int n = Nodes.Count - currentNode;
