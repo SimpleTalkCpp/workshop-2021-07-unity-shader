@@ -479,8 +479,8 @@ MonoBehaviour:
   TargetFrameRate: 30
   Source: {fileID: 1490350501}
   Width: 1
-  Duration: 1
-  ErrorTolerance: 1
+  Duration: 2
+  ErrorTolerance: 0.001
 --- !u!4 &1839544623
 Transform:
   m_ObjectHideFlags: 0

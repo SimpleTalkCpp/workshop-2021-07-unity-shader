@@ -12,13 +12,13 @@ public class Week002_Trail : MonoBehaviour
 
 	public float Width = 1;
 	public float Duration = 2;
-	public float ErrorTolerance = 0.2f;
+	public float ErrorTolerance = 0.001f;
 
 	[System.Serializable]
 	public struct Node {
 		public Vector3 pos0;
 		public Vector3 pos1;
-		public float time;
+		public double time;
 		public bool breakdown;
 	}
 	
@@ -74,7 +74,7 @@ public class Week002_Trail : MonoBehaviour
 
 	void UpdateNode() {
 		// remove timed out nodes
-		float time = Time.time;
+		double time = Time.timeAsDouble;
 		int n = Nodes.Count;
 		for (int i = currentNode; i < n; i++) {
 			if (Nodes[i].time + Duration < time) {
@@ -118,11 +118,9 @@ public class Week002_Trail : MonoBehaviour
 		var mid0 = (last.pos0 + node.pos0) / 2;
 		var mid1 = (last.pos1 + node.pos1) / 2;
 
-		var v = mid1 - mid0;
-		var diff = Mathf.Abs(v.sqrMagnitude - Width);
-
-		var e2 = ErrorTolerance * ErrorTolerance;
-		if (diff < e2) {
+		var midDis = Vector3.Distance(mid1, mid0);
+		var err = Mathf.Abs(midDis - Width);
+		if (err < ErrorTolerance) {
 			Nodes.Add(node);
 			return;
 		}
@@ -131,9 +129,9 @@ public class Week002_Trail : MonoBehaviour
 		mid.breakdown = true;
 		mid.time = (last.time + node.time) / 2;
 		mid.pos0 = mid0;
-		mid.pos1 = mid0 + v.normalized * Width;
+		mid.pos1 = mid0 + (mid1 - mid0).normalized * Width;
 
-		AddNode(mid, iter + 1);
+		AddNode(mid,  iter + 1);
 		AddNode(node, iter + 1);
 	}
 
@@ -153,8 +151,7 @@ public class Week002_Trail : MonoBehaviour
 			meshVertices.Add(node.pos0);
 			meshVertices.Add(node.pos1);
 
-//			var u = Mathf.Clamp01((Time.time - node.time) / Duration);
-			var u = node.time / Duration;
+			var u = (float)(node.time);
 			meshUV0.Add(new Vector2(u, 0));
 			meshUV0.Add(new Vector2(u, 1));
 
