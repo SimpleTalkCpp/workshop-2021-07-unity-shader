@@ -106,7 +106,8 @@ public class Week002_Trail : MonoBehaviour
 	}
 
 	void AddNode(Node node, int iter) {
-		if (iter > 16) return;
+		const int maxIteration = 8;
+		if (iter > maxIteration) return;
 
 		if (Nodes.Count == 0) {
 			Nodes.Add(node);
