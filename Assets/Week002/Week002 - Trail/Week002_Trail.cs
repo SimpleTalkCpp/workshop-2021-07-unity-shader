@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
-public class Week002_Trail : MonoBehaviour
+ public class Week002_Trail : MonoBehaviour
 {
 	public int TargetFrameRate = 30;
 
@@ -22,6 +22,8 @@ public class Week002_Trail : MonoBehaviour
 		public bool isBreakdown;
 	}
 	
+	double startTime;
+
 	List<Node> Nodes = new List<Node>();
 	int currentNode = 0;
 
@@ -35,6 +37,8 @@ public class Week002_Trail : MonoBehaviour
 	void Start() {
 		Application.targetFrameRate = TargetFrameRate;
 		meshFilter = gameObject.GetComponent<MeshFilter>();
+
+		startTime = Time.timeAsDouble;
 
 		if (!mesh) {
 			mesh = new Mesh();
@@ -107,7 +111,7 @@ public class Week002_Trail : MonoBehaviour
 		if (err < ErrorTolerance) {
 			Nodes.Add(node);
 			return;
-		}
+		} 
 
 		var mid = new Node();
 		mid.isBreakdown = true;
@@ -136,7 +140,7 @@ public class Week002_Trail : MonoBehaviour
 			meshVertices.Add(node.pos0);
 			meshVertices.Add(node.pos1);
 
-			var u = (float)(node.time);
+			var u = (float)(node.time - startTime);
 			meshUV0.Add(new Vector2(u, 0));
 			meshUV0.Add(new Vector2(u, 1));
 
