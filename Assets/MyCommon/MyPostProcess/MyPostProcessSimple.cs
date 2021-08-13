@@ -7,26 +7,27 @@ using UnityEngine.Rendering.Universal;
 public class MyPostProcessSimple : MyPostProcessBase
 {
 	public Material material;
-	static Mesh mesh;
+	static Mesh fullScreenTriangle;
 
-	override public void OnVolumeRenderExecute(ScriptableRenderContext context, ref RenderingData renderingData) {
+	override public void OnPostProcessExecute(ScriptableRenderContext context, ref RenderingData renderingData) {
 		if (!material) return;
 
-		if (!mesh) {
-			mesh = new Mesh();
-			mesh.name = "MyPostProcessSimple";
-			mesh.vertices = new Vector3[] {
-				new Vector3(-1,-1,0),
-				new Vector3( 1,-1,0),
-				new Vector3(-1, 1,0),
-				new Vector3( 1, 1,0),
+		if (!fullScreenTriangle) {
+			fullScreenTriangle = new Mesh() {
+				name = "MyPostProcessSimple",
+				vertices = new Vector3[] {
+					new Vector3(-1, -1, 0),
+					new Vector3( 3, -1, 0),
+					new Vector3(-1,  3, 0),
+				},
+				triangles = new int[] {0,1,2}
 			};
-			mesh.triangles = new int[] {0,1,2, 2,1,3};
+			fullScreenTriangle.UploadMeshData(true);
 		}
 
 		CommandBuffer cmd = CommandBufferPool.Get(GetType().Name);
 		cmd.Clear();
-		cmd.DrawMesh(mesh, Matrix4x4.identity, material);
+		cmd.DrawMesh(fullScreenTriangle, Matrix4x4.identity, material);
 		context.ExecuteCommandBuffer(cmd);
 		cmd.Clear();
 		CommandBufferPool.Release(cmd);

@@ -9,15 +9,15 @@ public class MyPostProcessBlit : MyPostProcessBase
 	public Material material;
 	RenderTargetHandle tempTexture;
 
-	override public void OnVolumeRenderConfigure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
+	override public void OnPostProcessConfigure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
 		cmd.GetTemporaryRT(tempTexture.id, cameraTextureDescriptor);
 	}
 
-	override public void OnVolumeRenderFrameCleanup(CommandBuffer cmd) {
+	override public void OnPostProcessFrameCleanup(CommandBuffer cmd) {
 		cmd.ReleaseTemporaryRT(tempTexture.id);
 	}
 
-	override public void OnVolumeRenderExecute(ScriptableRenderContext context, ref RenderingData renderingData) {
+	override public void OnPostProcessExecute(ScriptableRenderContext context, ref RenderingData renderingData) {
 		if (!material) return;
 
 		CommandBuffer cmd = CommandBufferPool.Get(GetType().Name);

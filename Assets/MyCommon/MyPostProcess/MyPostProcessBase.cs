@@ -18,12 +18,12 @@ public abstract class MyPostProcessBase : MonoBehaviour {
 		MyPostProcessManager.instance.Unregister(this);
 	}
 
-	public virtual void OnVolumeRenderConfigure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
+	public virtual void OnPostProcessConfigure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
 	}
 
-	public virtual void OnVolumeRenderFrameCleanup(CommandBuffer cmd) {
+	public virtual void OnPostProcessFrameCleanup(CommandBuffer cmd) {
 	}
 
-	public virtual void OnVolumeRenderExecute(ScriptableRenderContext context, ref RenderingData renderingData) {
+	public virtual void OnPostProcessExecute(ScriptableRenderContext context, ref RenderingData renderingData) {
 	}
 }

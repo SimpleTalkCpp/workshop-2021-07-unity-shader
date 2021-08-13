@@ -28,18 +28,18 @@ public class MyPostProcessRenderPass : ScriptableRenderPass
 
 	public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
 		if (m_volume) {
-			m_volume.OnVolumeRenderConfigure(cmd, cameraTextureDescriptor);
+			m_volume.OnPostProcessConfigure(cmd, cameraTextureDescriptor);
 		}
 	}
 	public override void FrameCleanup(CommandBuffer cmd) {
 		if (m_volume) {
-			m_volume.OnVolumeRenderFrameCleanup(cmd);
+			m_volume.OnPostProcessFrameCleanup(cmd);
 		}
 	}
 
 	public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) {
 		if (m_volume) {
-			m_volume.OnVolumeRenderExecute(context, ref renderingData);
+			m_volume.OnPostProcessExecute(context, ref renderingData);
 		}
 	}
 }
