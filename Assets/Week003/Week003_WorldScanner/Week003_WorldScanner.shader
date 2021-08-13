@@ -3,10 +3,12 @@ Shader "Unlit/Week003_WorldScanner"
 	Properties {
 		_MainTex("Texture", 2D) = "white" {}
 		_Color ("Color", Color) = (1,1,1,1)
-		_Radius("Radius", range(0, 300)) = 10
-		_EdgeWidth("Edge Width", range(0,100)) = 5
-		_EdgeSoftness("Edge Softness", range(0,1)) = 0.01
+		_Radius("Radius", Range(0, 300)) = 10
+		_EdgeWidth("Edge Width", Range(0,100)) = 5
+		_EdgeSoftness("Edge Softness", Range(0,1)) = 0.01
 		_ScannerCenter ("ScannerCenter", Vector) = (0,0,0,0)
+
+		_UvMode("UvMode [1: 1D, 2: 2D]", Int) = 2
 	}
 
 	SubShader
@@ -48,6 +50,7 @@ Shader "Unlit/Week003_WorldScanner"
 			float _Radius;
 			float _EdgeWidth;
 			float _EdgeSoftness;
+			int _UvMode;
 
 			MY_TEXTURE2D(_MainTex)
 
@@ -69,7 +72,13 @@ Shader "Unlit/Week003_WorldScanner"
 				float dis = length(d);
 
 				float outer = _Radius + _EdgeWidth;
-				float2 uv = float2(my_invLerp(_Radius, outer, dis), 0.5);
+				
+				float2 uv = float2(my_invLerp(_Radius, outer, dis), 0);
+
+				if (_UvMode == 2) {
+					uv.y = atan2(d.z, d.x) / (2 * PI);
+				}
+
 				float4 tex = MY_SAMPLE_TEXTURE2D(_MainTex, uv);
 
 				float alpha = smoothstep(0, _EdgeSoftness, saturate(1 - abs(uv.x * 2 - 1)));
