@@ -129,7 +129,7 @@ public class MyList_UnitTest {
 		}
 	}
 
-	[UnityEditor.MenuItem("MyUnitTest/MyList %t")]
+//	[UnityEditor.MenuItem("MyUnitTest/MyList %t")]
 	public static void UnitTest() {
 		Debug.Log("MyUnitTest/MyList");
 
