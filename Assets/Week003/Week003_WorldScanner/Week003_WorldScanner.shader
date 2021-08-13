@@ -40,7 +40,6 @@ Shader "Unlit/Week003_WorldScanner"
 				Varyings o;
 //				o.positionHCS = TransformObjectToHClip(i.positionOS.xyz);
 				o.positionHCS = i.positionOS;
-//				o.positionHCS.xyz *= 0.5;
 				return o;
 			}
 
