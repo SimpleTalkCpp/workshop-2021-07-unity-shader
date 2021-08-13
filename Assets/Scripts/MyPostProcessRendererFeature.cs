@@ -20,9 +20,9 @@ public class MyPostProcessRendererFeature : ScriptableRendererFeature
 
 public class MyPostProcessRenderPass : ScriptableRenderPass
 {
-	MyPostProcessComponent m_volume;
+	MyPostProcessBase m_volume;
 
-	public MyPostProcessRenderPass(MyPostProcessComponent vol) {
+	public MyPostProcessRenderPass(MyPostProcessBase vol) {
 		m_volume = vol;
 	}
 
@@ -56,11 +56,11 @@ public class MyPostProcessManager
 		}
 	}
 
-	public void Register(MyPostProcessComponent vol) {
+	public void Register(MyPostProcessBase vol) {
 		m_volumes.Add(vol, new MyPostProcessRenderPass(vol));
 	}
 
-	public void Unregister(MyPostProcessComponent vol) {
+	public void Unregister(MyPostProcessBase vol) {
 		if (m_volumes.ContainsKey(vol)) {
 			m_volumes.Remove(vol);
 		}
@@ -70,10 +70,11 @@ public class MyPostProcessManager
 		foreach (var t in m_volumes) {
 			if (t.Key == null || t.Value == null) continue;
 			t.Key.cameraColorTarget = renderer.cameraColorTarget;
+			t.Value.renderPassEvent = t.Key.renderPassEvent;
 			renderer.EnqueuePass(t.Value);
 		}
 	}
 
-	Dictionary<MyPostProcessComponent, MyPostProcessRenderPass> m_volumes = new Dictionary<MyPostProcessComponent, MyPostProcessRenderPass>();
+	Dictionary<MyPostProcessBase, MyPostProcessRenderPass> m_volumes = new Dictionary<MyPostProcessBase, MyPostProcessRenderPass>();
 }
 

@@ -1,12 +1,19 @@
 Shader "Unlit/Week003_WorldScanner"
 {
 	Properties {
+		_MainTex("Texture", 2D) = "white" {}
 		_Color ("Color", Color) = (1,1,1,1)
+		_Radius("Radius", float) = 10
+		_ScannerCenter ("ScannerCenter", Vector) = (0,0,0,0)
 	}
 
 	SubShader
 	{
 		Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" }
+		ZTest Always
+		ZWrite Off
+
+		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
 		{
@@ -14,12 +21,12 @@ Shader "Unlit/Week003_WorldScanner"
 			#pragma vertex vert
 			#pragma fragment frag
 
-			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
+			#include "../MyCommon/MyCommon.hlsl"
 
 			struct Attributes
 			{
 				float4 positionOS   : POSITION;
+				float2 uv : TEXCOORD0;
 			};
 
 			struct Varyings
@@ -27,31 +34,44 @@ Shader "Unlit/Week003_WorldScanner"
 				float4 positionHCS  : SV_POSITION;
 			};
 
-			Varyings vert(Attributes IN)
+			Varyings vert(Attributes i)
 			{
-				Varyings OUT;
-				OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
-				return OUT;
+				Varyings o;
+//				o.positionHCS = TransformObjectToHClip(i.positionOS.xyz);
+				o.positionHCS = i.positionOS;
+//				o.positionHCS.xyz *= 0.5;
+				return o;
 			}
 
 			float4 _Color;
+			float4 ScannerCenter;
+			float _Radius;
 
-			float4 frag(Varyings IN) : SV_Target
+			TEXTURE2D(_MainTex);
+			float4 _MainTex_ST;
+			SAMPLER(sampler_MainTex);
+
+			float4 frag(Varyings i) : SV_Target
 			{
 //				return float4(1,0,0,1);
 
-				float2 screenUV = IN.positionHCS.xy / _ScaledScreenParams.xy;
+				float2 screenUV = i.positionHCS.xy / _ScaledScreenParams.xy;
 
 				#if UNITY_REVERSED_Z
 					real depth = SampleSceneDepth(screenUV);
 				#else
-					real depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(UV));
+					real depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(screenUV));
 				#endif
+
+//				return float4(depth * 100, 1, 0, 1);
 
 				float3 worldPos = ComputeWorldSpacePosition(screenUV, depth, UNITY_MATRIX_I_VP);
 
-				float4 o = _Color;
-				o.a *= length(worldPos.xz) * 0.001;
+				
+				float4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, TRANSFORM_TEX(worldPos.xz, _MainTex));
+
+				float4 o = _Color * tex;
+				o.a *= step(length(worldPos.xyz - ScannerCenter.xyz), _Radius);
 				return o;
 
 				uint scale = 10;
