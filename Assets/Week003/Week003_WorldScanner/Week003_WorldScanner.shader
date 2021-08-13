@@ -53,14 +53,12 @@ Shader "Unlit/Week003_WorldScanner"
 
 			float4 frag(Varyings i) : SV_Target
 			{
-//				return float4(1,0,0,1);
-
 				float2 screenUV = i.positionHCS.xy / _ScaledScreenParams.xy;
 
 				#if UNITY_REVERSED_Z
-					real depth = SampleSceneDepth(screenUV);
+					float depth = SampleSceneDepth(screenUV);
 				#else
-					real depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(screenUV));
+					float depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(screenUV));
 				#endif
 
 //				return float4(depth * 100, 1, 0, 1);
@@ -77,24 +75,8 @@ Shader "Unlit/Week003_WorldScanner"
 				float alpha = smoothstep(0, _EdgeSoftness, saturate(1 - abs(uv.x * 2 - 1)));
 
 				float4 o = _Color * tex;
-				o.a = alpha;
-
+				o.a *= alpha;
 				return o;
-
-				uint scale = 10;
-				uint3 worldIntPos = uint3(abs(worldPos.xyz * scale));
-				bool white = ((worldIntPos.x) & 1) ^ (worldIntPos.y & 1) ^ (worldIntPos.z & 1);
-				float4 color = white ? half4(1,1,1,1) : half4(0,0,0,1);
-
-				#if UNITY_REVERSED_Z
-					if(depth < 0.0001)
-						return half4(0,0,0,1);
-				#else
-					if(depth > 0.9999)
-						return half4(0,0,0,1);
-				#endif
-
-				return color;
 			}
 			ENDHLSL
 		}
