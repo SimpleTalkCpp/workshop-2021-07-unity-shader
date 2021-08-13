@@ -3,8 +3,8 @@ Shader "Unlit/Week003_WorldScanner"
 	Properties {
 		_MainTex("Texture", 2D) = "white" {}
 		_Color ("Color", Color) = (1,1,1,1)
-		_Radius("Radius", range(0, 200)) = 10
-		_EdgeWidth("Edge Width", range(0,50)) = 5
+		_Radius("Radius", range(0, 300)) = 10
+		_EdgeWidth("Edge Width", range(0,100)) = 5
 		_EdgeSoftness("Edge Softness", range(0,1)) = 0.01
 		_ScannerCenter ("ScannerCenter", Vector) = (0,0,0,0)
 	}

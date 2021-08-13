@@ -45,8 +45,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: b481940ad90e2f04c9efd240421fc90b, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 8.91, y: 0.2}
+        m_Scale: {x: 2, y: 1}
+        m_Offset: {x: 1.33, y: 0.32}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -86,8 +86,8 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _EdgeSoftness: 0.442
-    - _EdgeWidth: 24.7
+    - _EdgeSoftness: 0.039
+    - _EdgeWidth: 36
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
@@ -96,7 +96,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
-    - _Radius: 46
+    - _Radius: 71
     - _ReceiveShadows: 1
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
@@ -109,7 +109,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ScannerCenter: {r: 391, g: 24, b: 415, a: 0}
+    - _ScannerCenter: {r: 404.1, g: 10.3, b: 399.4, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &7579277753443741993
