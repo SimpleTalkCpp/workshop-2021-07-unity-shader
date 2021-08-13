@@ -3,7 +3,9 @@ Shader "Unlit/Week003_WorldScanner"
 	Properties {
 		_MainTex("Texture", 2D) = "white" {}
 		_Color ("Color", Color) = (1,1,1,1)
-		_Radius("Radius", float) = 10
+		_Radius("Radius", range(0, 200)) = 10
+		_EdgeWidth("Edge Width", range(0,50)) = 5
+		_EdgeSoftness("Edge Softness", range(0,1)) = 0.01
 		_ScannerCenter ("ScannerCenter", Vector) = (0,0,0,0)
 	}
 
@@ -21,12 +23,11 @@ Shader "Unlit/Week003_WorldScanner"
 			#pragma vertex vert
 			#pragma fragment frag
 
-			#include "../MyCommon/MyCommon.hlsl"
+			#include "../../MyCommon/MyCommon.hlsl"
 
 			struct Attributes
 			{
 				float4 positionOS   : POSITION;
-				float2 uv : TEXCOORD0;
 			};
 
 			struct Varyings
@@ -44,12 +45,12 @@ Shader "Unlit/Week003_WorldScanner"
 			}
 
 			float4 _Color;
-			float4 ScannerCenter;
+			float4 _ScannerCenter;
 			float _Radius;
+			float _EdgeWidth;
+			float _EdgeSoftness;
 
-			TEXTURE2D(_MainTex);
-			float4 _MainTex_ST;
-			SAMPLER(sampler_MainTex);
+			MY_TEXTURE2D(_MainTex)
 
 			float4 frag(Varyings i) : SV_Target
 			{
@@ -67,11 +68,18 @@ Shader "Unlit/Week003_WorldScanner"
 
 				float3 worldPos = ComputeWorldSpacePosition(screenUV, depth, UNITY_MATRIX_I_VP);
 
-				
-				float4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, TRANSFORM_TEX(worldPos.xz, _MainTex));
+				float3 d = worldPos - _ScannerCenter.xyz;
+				float dis = length(d);
+
+				float outer = _Radius + _EdgeWidth;
+				float2 uv = float2(my_invLerp(_Radius, outer, dis), 0.5);
+				float4 tex = MY_SAMPLE_TEXTURE2D(_MainTex, uv);
+
+				float alpha = smoothstep(0, _EdgeSoftness, saturate(1 - abs(uv.x * 2 - 1)));
 
 				float4 o = _Color * tex;
-				o.a *= step(length(worldPos.xyz - ScannerCenter.xyz), _Radius);
+				o.a = alpha;
+
 				return o;
 
 				uint scale = 10;

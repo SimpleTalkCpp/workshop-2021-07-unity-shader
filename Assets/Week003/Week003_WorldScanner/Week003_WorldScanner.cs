@@ -9,7 +9,7 @@ public class Week003_WorldScanner : MyPostProcessSimple
 {
 	public void Update() {
 		if (material) {
-			material.SetVector("ScannerCenter", transform.position);
+			material.SetVector("_ScannerCenter", transform.position);
 		}
 	}
 }
