@@ -2,13 +2,15 @@ Shader "Unlit/Week003_WorldScanner"
 {
 	Properties {
 		_MainTex("Texture", 2D) = "white" {}
+		[Enum(Week003_WorldScanner_UvMode)]
+		_UvMode("UvMode", Int) = 0
+
 		_Color ("Color", Color) = (1,1,1,1)
 		_Radius("Radius", Range(0, 300)) = 10
 		_EdgeWidth("Edge Width", Range(0,100)) = 5
 		_EdgeSoftness("Edge Softness", Range(0,1)) = 0.01
 		_ScannerCenter ("ScannerCenter", Vector) = (0,0,0,0)
 
-		_UvMode("UvMode [1: 1D, 2: 2D]", Int) = 2
 	}
 
 	SubShader
