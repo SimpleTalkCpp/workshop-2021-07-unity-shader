@@ -2,7 +2,6 @@
 #define _MY_COMMON_HLSL_
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
 #define MY_TEXTURE2D(T) \
 	TEXTURE2D(T); \

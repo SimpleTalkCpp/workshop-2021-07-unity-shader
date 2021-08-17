@@ -27,6 +27,7 @@ Shader "Unlit/Week003_WorldScanner"
 			#pragma vertex vert
 			#pragma fragment frag
 
+			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 			#include "../../MyCommon/MyCommon.hlsl"
 
 			struct Attributes
