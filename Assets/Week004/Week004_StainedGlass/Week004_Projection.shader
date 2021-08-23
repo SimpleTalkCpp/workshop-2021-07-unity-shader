@@ -1,10 +1,8 @@
 Shader "Unlit/Week004_Projection"
 {
 	Properties {
-		_MyProjColorTex("ProjectColorTexture", 2D) = "white" {}
-		_MyProjDepthTex("ProjectDepthTexture", 2D) = "white" {}
-
 		_Color ("Color", Color) = (1,1,1,1)
+		_DepthBias("Depth Bias", Range(-0.1, 0.1)) = 0.05
 	}
 
 	SubShader
@@ -44,47 +42,41 @@ Shader "Unlit/Week004_Projection"
 			}
 
 			float4 _Color;
+			float _DepthBias;
 			float4x4 _ProjVP;
 
 			MY_TEXTURE2D(_MyProjColorTex)
-			MY_TEXTURE2D(_MyProjDepthTex)
+
+			TEXTURE2D_FLOAT(_MyProjDepthTex);
+			SAMPLER(sampler_MyProjDepthTex);
 
 			float4 frag(Varyings i) : SV_Target
 			{
 				float2 screenUV = i.positionHCS.xy / _ScaledScreenParams.xy;
-
-				#if UNITY_REVERSED_Z
-					float depth = SampleSceneDepth(screenUV);
-				#else
-					float depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(screenUV));
-				#endif
+				float depth = SampleSceneDepth(screenUV);
 
 				float3 worldPos = ComputeWorldSpacePosition(screenUV, depth, UNITY_MATRIX_I_VP);
 
 				float4 projPos = mul(_ProjVP, float4(worldPos,1));
-
-				projPos.xy /= projPos.w;
+				projPos.xyz /= projPos.w;
 
 				float2 absProjPos = abs(projPos.xy);
 				if (absProjPos.x > 1 || absProjPos.y > 1)
 					return float4(0,0,0,0);
 
-				projPos = projPos * 0.5 + 0.5;
-				projPos = 1 - projPos;
+				float2 projUv = 0.5 - projPos.xy * 0.5;
 
-				float4 projColorTex = MY_SAMPLE_TEXTURE2D(_MyProjColorTex, projPos.xy);
-				float  projDepthTex = MY_SAMPLE_TEXTURE2D(_MyProjDepthTex, projPos.xy).r;
+				float4 projColorTex = MY_SAMPLE_TEXTURE2D(_MyProjColorTex, projUv);
+				float  projDepthTex = SAMPLE_TEXTURE2D_X(_MyProjDepthTex, sampler_MyProjDepthTex, projUv).r;
 
-				#if ! UNITY_REVERSED_Z
-					projDepthTex = lerp(UNITY_NEAR_CLIP_VALUE, 1, projDepthTex);
-				#endif
+//				return float4(-projPos.z   * 10, 0, 0, 1);
+//				return float4(projDepthTex * 10, 0, 0, 1);
 	
-//				return float4(projDepthTex.x * 1000, 0, 0, 1);
+				float diff = projDepthTex + projPos.z;
+//				return float4(diff * 10, 0, 0, 1);
 
-				float d = 1 - (projDepthTex * 0.5 + 0.5);
-
-				if (projPos.z < d)
-					return float4(1,0,0,1);
+				if (diff > _DepthBias)
+					return float4(1,0,0,0);
 
 				return projColorTex * _Color;
 			}
