@@ -20,26 +20,26 @@ public class MyPostProcessRendererFeature : ScriptableRendererFeature
 
 public class MyPostProcessRenderPass : ScriptableRenderPass
 {
-	MyPostProcessBase m_volume;
+	MyPostProcessBase m_myPostProcessBase;
 
 	public MyPostProcessRenderPass(MyPostProcessBase vol) {
-		m_volume = vol;
+		m_myPostProcessBase = vol;
 	}
 
 	public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor) {
-		if (m_volume) {
-			m_volume.OnPostProcessConfigure(cmd, cameraTextureDescriptor);
+		if (m_myPostProcessBase) {
+			m_myPostProcessBase.OnPostProcessConfigure(this, cmd, cameraTextureDescriptor);
 		}
 	}
 	public override void FrameCleanup(CommandBuffer cmd) {
-		if (m_volume) {
-			m_volume.OnPostProcessFrameCleanup(cmd);
+		if (m_myPostProcessBase) {
+			m_myPostProcessBase.OnPostProcessFrameCleanup(this, cmd);
 		}
 	}
 
 	public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) {
-		if (m_volume) {
-			m_volume.OnPostProcessExecute(context, ref renderingData);
+		if (m_myPostProcessBase) {
+			m_myPostProcessBase.OnPostProcessExecute(this, context, ref renderingData);
 		}
 	}
 }
@@ -57,24 +57,30 @@ public class MyPostProcessManager
 	}
 
 	public void Register(MyPostProcessBase vol) {
-		m_volumes.Add(vol, new MyPostProcessRenderPass(vol));
+		m_passes.Add(vol, new MyPostProcessRenderPass(vol));
 	}
 
 	public void Unregister(MyPostProcessBase vol) {
-		if (m_volumes.ContainsKey(vol)) {
-			m_volumes.Remove(vol);
+		if (m_passes.ContainsKey(vol)) {
+			m_passes.Remove(vol);
 		}
 	}
 
 	internal void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData) {
-		foreach (var t in m_volumes) {
+		foreach (var t in m_passes) {
 			if (t.Key == null || t.Value == null) continue;
 			t.Key.cameraColorTarget = renderer.cameraColorTarget;
 			t.Value.renderPassEvent = t.Key.renderPassEvent;
 			renderer.EnqueuePass(t.Value);
 		}
+
+		if (OnAddRenderPasses != null)
+			OnAddRenderPasses(renderer, ref renderingData);
 	}
 
-	Dictionary<MyPostProcessBase, MyPostProcessRenderPass> m_volumes = new Dictionary<MyPostProcessBase, MyPostProcessRenderPass>();
+	public delegate void OnAddRenderPassesDelegate(ScriptableRenderer renderer, ref RenderingData renderingData);
+	public event OnAddRenderPassesDelegate OnAddRenderPasses;
+
+	Dictionary<MyPostProcessBase, MyPostProcessRenderPass> m_passes = new Dictionary<MyPostProcessBase, MyPostProcessRenderPass>();
 }
 

@@ -31,7 +31,6 @@ Shader "Unlit/Week004_Phong"
 			{
 				float4 positionHCS : SV_POSITION;
 				float3 positionWS  : TEXCOORD8;
-				float3 viewDir     : TEXCOORD9;
 				float3 normal      : NORMAL;
 			};
 
@@ -106,7 +105,7 @@ Shader "Unlit/Week004_Phong"
 						intensity *= smoothstep(lightSpotAngle, lightInnerSpotAngle, dot(lightDir, L));
 					}
 
-					o.rgb += (diffuse + specular) * intensity * s.baseColor * lightColor;
+					o.rgb += (diffuse + specular) * intensity * s.baseColor.rgb * lightColor;
 				}
 
 				return o;
@@ -116,7 +115,7 @@ Shader "Unlit/Week004_Phong"
 			{
 				SurfaceInfo s;
 				s.baseColor = _BaseColor;
-				s.ambient   = _Ambient;
+				s.ambient   = _Ambient.rgb;
 				s.diffuse   = _Diffuse;
 				s.specular  = _Specular;
 				s.shininess = _Shininess;

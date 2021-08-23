@@ -4,15 +4,22 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class MyPostProcessSimple : MyPostProcessBase
+[ExecuteInEditMode]
+public class Week004_ProjColorPass : MyPostProcessBase
 {
-	public Material material;
+	public Camera ProjectorCamera;
+	public RenderTexture renderTarget;
 
 	override public void OnPostProcessExecute(MyPostProcessRenderPass pass, ScriptableRenderContext context, ref RenderingData renderingData) {
-		if (!material) return;
-		CommandBuffer cmd = CommandBufferPool.Get(GetType().Name);
+		if (!ProjectorCamera) return;
+
+		if (renderingData.cameraData.camera != ProjectorCamera) 
+			return;
+
+		CommandBuffer cmd = CommandBufferPool.Get("Week004_Projection_CopyProjDepthTex");
 		cmd.Clear();
-		cmd.DrawMesh(GetFullScreenTriangleMesh(), Matrix4x4.identity, material);
+		cmd.ClearRenderTarget(false, true, Color.black);
+
 		context.ExecuteCommandBuffer(cmd);
 		cmd.Clear();
 		CommandBufferPool.Release(cmd);
