@@ -50,7 +50,6 @@ public class Week004_Projection : MonoBehaviour
 
 			CommandBuffer cmd = CommandBufferPool.Get(GetType().Name);
 			cmd.Clear();
-
 			// Clear all Opaques color, only wants transparent objects
 			cmd.ClearRenderTarget(false, true, Color.black);
 			context.ExecuteCommandBuffer(cmd);
@@ -93,7 +92,7 @@ public class Week004_Projection : MonoBehaviour
 		Week004_Projection _owner;
 		public ProjectionPass(Week004_Projection owner) {
 			_owner = owner;
-			renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing + 1;
+			renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
 		}
 
 		public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) {
@@ -105,20 +104,17 @@ public class Week004_Projection : MonoBehaviour
 
 			var projMat = GL.GetGPUProjectionMatrix(cam.projectionMatrix, false);
 			var viewMat = cam.transform.worldToLocalMatrix;
-			_owner.material.SetMatrix("_ProjVP", projMat * viewMat);
 
-			var target = cam.targetTexture;
+			_owner.material.SetMatrix("_ProjVP", projMat * viewMat);
+			_owner.material.SetTexture("_MyProjColorTex", cam.targetTexture);
+			_owner.material.SetTexture("_MyProjDepthTex", _owner.projDepthTenderTarget);
 
 			CommandBuffer cmd = CommandBufferPool.Get(GetType().Name);
 			cmd.Clear();
-			_owner.material.SetTexture("_MyProjColorTex", target);
-			_owner.material.SetTexture("_MyProjDepthTex", _owner.projDepthTenderTarget);
-
 			cmd.DrawMesh(MyPostProcessBase.GetFullScreenTriangleMesh(), Matrix4x4.identity, _owner.material);
 			context.ExecuteCommandBuffer(cmd);
 			cmd.Clear();
 			CommandBufferPool.Release(cmd);
-
 		}
 	}
 }
