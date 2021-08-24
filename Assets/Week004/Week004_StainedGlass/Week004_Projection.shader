@@ -3,7 +3,7 @@ Shader "Unlit/Week004_Projection"
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_Intensity("Intensity", Range(0, 5)) = 1
-		_DepthBias("Depth Bias", Range(0.001, 0.05)) = 0.05
+		_DepthBias("Depth Bias", Range(0.02, 0.04)) = 0.03
 		_FadeStart("FadeStart", Range(0, 10)) = 0
 		_FadeWidth("FadeWidth", Range(0, 10)) = 1
 	}
@@ -45,8 +45,8 @@ Shader "Unlit/Week004_Projection"
 			}
 
 			float4 _Color;
-			float4 _ProjPos;
-			float4x4 _ProjVP;
+			float4 _MyProjPos;
+			float4x4 _MyProjVP;
 
 			float _Intensity;
 			float _DepthBias;
@@ -65,7 +65,7 @@ Shader "Unlit/Week004_Projection"
 
 				float3 worldPos = ComputeWorldSpacePosition(screenUV, depth, UNITY_MATRIX_I_VP);
 
-				float4 projPos = mul(_ProjVP, float4(worldPos,1));
+				float4 projPos = mul(_MyProjVP, float4(worldPos,1));
 				projPos.xyz /= projPos.w;
 
 				float2 absProjPos = abs(projPos.xy);
@@ -86,7 +86,7 @@ Shader "Unlit/Week004_Projection"
 				if (diff > -_DepthBias)
 					return float4(1,0,0,0);
 
-				float projDis = length(_ProjPos - worldPos);
+				float projDis = length(_MyProjPos.xyz - worldPos);
 
 				float fade = 1 - saturate(smoothstep(_FadeStart, _FadeStart * _FadeWidth, projDis));
 				projColorTex.a *= fade * fade;

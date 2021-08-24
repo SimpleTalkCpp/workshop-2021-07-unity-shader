@@ -14,14 +14,14 @@ public class Week004_Projection : MonoBehaviour
 
 	public RenderTexture projDepthTenderTarget;
 
-	MyClearColorPass projClearColorPass;
-	MyCopyDepthPass projCopyDepthPass;
-	MyProjectionPass projectionPass;
+	MyClearColorPass myClearColorPass;
+	MyCopyDepthPass myCopyDepthPass;
+	MyProjectionPass myProjectionPass;
 
 	private void OnEnable() {
-		projClearColorPass  = new MyClearColorPass(this);
-		projCopyDepthPass   = new MyCopyDepthPass(this);
-		projectionPass      = new MyProjectionPass(this);
+		myClearColorPass  = new MyClearColorPass(this);
+		myCopyDepthPass   = new MyCopyDepthPass(this);
+		myProjectionPass  = new MyProjectionPass(this);
 
 		MyPostProcessManager.instance.OnAddRenderPasses += AddRenderPasses;
 	}
@@ -31,9 +31,9 @@ public class Week004_Projection : MonoBehaviour
 	}
 
 	void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData) {
-		renderer.EnqueuePass(projClearColorPass);
-		renderer.EnqueuePass(projCopyDepthPass);
-		renderer.EnqueuePass(projectionPass);
+		renderer.EnqueuePass(myClearColorPass);
+		renderer.EnqueuePass(myCopyDepthPass);
+		renderer.EnqueuePass(myProjectionPass);
 	}
 
 	public class MyClearColorPass : ScriptableRenderPass {
@@ -105,8 +105,8 @@ public class Week004_Projection : MonoBehaviour
 			var projMat = GL.GetGPUProjectionMatrix(cam.projectionMatrix, false);
 			var viewMat = cam.transform.worldToLocalMatrix;
 
-			_owner.material.SetMatrix("_ProjVP", projMat * viewMat);
-			_owner.material.SetVector("_ProjPos", cam.transform.position);
+			_owner.material.SetMatrix("_MyProjVP", projMat * viewMat);
+			_owner.material.SetVector("_MyProjPos", cam.transform.position);
 			_owner.material.SetTexture("_MyProjColorTex", cam.targetTexture);
 			_owner.material.SetTexture("_MyProjDepthTex", _owner.projDepthTenderTarget);
 
