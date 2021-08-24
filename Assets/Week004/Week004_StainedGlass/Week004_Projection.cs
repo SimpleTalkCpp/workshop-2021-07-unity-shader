@@ -14,14 +14,14 @@ public class Week004_Projection : MonoBehaviour
 
 	public RenderTexture projDepthTenderTarget;
 
-	ProjClearColorPass projClearColorPass;
-	ProjCopyDepthPass projCopyDepthPass;
-	ProjectionPass projectionPass;
+	MyClearColorPass projClearColorPass;
+	MyCopyDepthPass projCopyDepthPass;
+	MyProjectionPass projectionPass;
 
 	private void OnEnable() {
-		projClearColorPass  = new ProjClearColorPass(this);
-		projCopyDepthPass   = new ProjCopyDepthPass(this);
-		projectionPass      = new ProjectionPass(this);
+		projClearColorPass  = new MyClearColorPass(this);
+		projCopyDepthPass   = new MyCopyDepthPass(this);
+		projectionPass      = new MyProjectionPass(this);
 
 		MyPostProcessManager.instance.OnAddRenderPasses += AddRenderPasses;
 	}
@@ -36,10 +36,10 @@ public class Week004_Projection : MonoBehaviour
 		renderer.EnqueuePass(projectionPass);
 	}
 
-	public class ProjClearColorPass : ScriptableRenderPass {
+	public class MyClearColorPass : ScriptableRenderPass {
 		Week004_Projection _owner;
 
-		public ProjClearColorPass(Week004_Projection owner) {
+		public MyClearColorPass(Week004_Projection owner) {
 			_owner = owner;
 			renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
 		}
@@ -58,11 +58,11 @@ public class Week004_Projection : MonoBehaviour
 		}
 	}
 
-	public class ProjCopyDepthPass : ScriptableRenderPass {
+	public class MyCopyDepthPass : ScriptableRenderPass {
 		Week004_Projection _owner;
 		Material copyDepthMaterial;
 
-		public ProjCopyDepthPass(Week004_Projection owner) {
+		public MyCopyDepthPass(Week004_Projection owner) {
 			_owner = owner;
 			renderPassEvent = RenderPassEvent.AfterRenderingSkybox;
 		}
@@ -88,9 +88,9 @@ public class Week004_Projection : MonoBehaviour
 		}
 	}
 
-	public class ProjectionPass : ScriptableRenderPass {
+	public class MyProjectionPass : ScriptableRenderPass {
 		Week004_Projection _owner;
-		public ProjectionPass(Week004_Projection owner) {
+		public MyProjectionPass(Week004_Projection owner) {
 			_owner = owner;
 			renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
 		}
