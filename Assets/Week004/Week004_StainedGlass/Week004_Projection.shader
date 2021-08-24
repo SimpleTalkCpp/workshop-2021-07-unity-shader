@@ -2,7 +2,10 @@ Shader "Unlit/Week004_Projection"
 {
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
-		_DepthBias("Depth Bias", Range(-0.1, 0.1)) = 0.05
+		_Intensity("Intensity", Range(0, 5)) = 1
+		_DepthBias("Depth Bias", Range(0.001, 0.05)) = 0.05
+		_FadeStart("FadeStart", Range(0, 10)) = 0
+		_FadeWidth("FadeWidth", Range(0, 10)) = 1
 	}
 
 	SubShader
@@ -42,8 +45,13 @@ Shader "Unlit/Week004_Projection"
 			}
 
 			float4 _Color;
-			float _DepthBias;
+			float4 _ProjPos;
 			float4x4 _ProjVP;
+
+			float _Intensity;
+			float _DepthBias;
+			float _FadeStart;
+			float _FadeWidth;
 
 			MY_TEXTURE2D(_MyProjColorTex)
 
@@ -75,8 +83,15 @@ Shader "Unlit/Week004_Projection"
 				float diff = projDepthTex + projPos.z;
 //				return float4(diff * 10, 0, 0, 1);
 
-				if (diff > _DepthBias)
+				if (diff > -_DepthBias)
 					return float4(1,0,0,0);
+
+				float projDis = length(_ProjPos - worldPos);
+
+				float fade = 1 - saturate(smoothstep(_FadeStart, _FadeStart * _FadeWidth, projDis));
+				projColorTex.a *= fade * fade;
+
+				_Color.rgb *= _Intensity;
 
 				return projColorTex * _Color;
 			}

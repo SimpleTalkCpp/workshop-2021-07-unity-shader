@@ -106,6 +106,7 @@ public class Week004_Projection : MonoBehaviour
 			var viewMat = cam.transform.worldToLocalMatrix;
 
 			_owner.material.SetMatrix("_ProjVP", projMat * viewMat);
+			_owner.material.SetVector("_ProjPos", cam.transform.position);
 			_owner.material.SetTexture("_MyProjColorTex", cam.targetTexture);
 			_owner.material.SetTexture("_MyProjDepthTex", _owner.projDepthTenderTarget);
 
