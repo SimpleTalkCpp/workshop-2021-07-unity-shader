@@ -62,7 +62,7 @@ Shader "Unlit/Week004_Phong"
 				Varyings o;
 				o.positionHCS = TransformObjectToHClip(i.positionOS.xyz);
 				o.positionWS  = TransformObjectToWorld(i.positionOS.xyz);
-				o.normal = i.normal;
+				o.normal      = TransformObjectToWorldDir(i.normal);
 				return o;
 			}
 
