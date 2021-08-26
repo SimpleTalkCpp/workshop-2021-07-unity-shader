@@ -110,8 +110,8 @@ Material:
     - _EnvironmentReflections: 1
     - _FadeByDistance: 51.6
     - _FadeEnd: 14.4
-    - _FadeStart: 5.2
-    - _FadeWidth: 2.22
+    - _FadeStart: 4.53
+    - _FadeWidth: 2.64
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0

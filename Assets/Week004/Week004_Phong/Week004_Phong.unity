@@ -403,7 +403,7 @@ GameObject:
   - component: {fileID: 501539700}
   - component: {fileID: 501539699}
   m_Layer: 0
-  m_Name: Week004_Phong
+  m_Name: Week004_LigthSetup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

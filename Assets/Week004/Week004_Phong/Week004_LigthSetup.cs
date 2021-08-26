@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [ExecuteInEditMode]
-public class Week004_Phong : MonoBehaviour
+public class Week004_LigthSetup : MonoBehaviour
 {
 	public Light[] lights;
 
