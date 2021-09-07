@@ -79,7 +79,7 @@ Shader "Unlit/Week006_WaterInBottle"
 					discard;
 				}
 
-				float2 r = _Refractive + _EdgeRefractive * saturate(d / _Edge);
+				float2 r = lerp(_EdgeRefractive, _Refractive, saturate(d / _Edge));
 
 				float4 color = _BaseColor;
 
@@ -100,7 +100,7 @@ Shader "Unlit/Week006_WaterInBottle"
 					color = _WaterSurfaceColor;
 				}
 
-				float3 c = SampleSceneColor(screenUV + N * r);
+				float3 c = SampleSceneColor(screenUV + N * N * r);
 				c = lerp(c, color.rgb, color.a);
 				return float4(c, 1);
 			}
