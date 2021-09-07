@@ -4,7 +4,6 @@ Shader "Unlit/Week006_WaterInBottle"
 	{
 		_BaseColor("BaseColor", Color) = (1,1,1,1)
 		_WaterSurfaceColor("Water Surface Color", Color) = (1,1,1,1)
-		_NoiseTex("NoiseTex", 2D) = "white" {}
 		_WaterPlane("Water Plane", Vector) = (0,1,0,0)
 		_Refractive("_Refractive", Range(0, 1)) = 0.2 
 		_EdgeRefractive("_EdgeRefractive", Range(0, 1)) = 0.2 
@@ -52,8 +51,6 @@ Shader "Unlit/Week006_WaterInBottle"
 			float _Refractive;
 			float _EdgeRefractive;
 
-			MY_TEXTURE2D(_NoiseTex);
-
 			Varyings vert (Attributes i)
 			{
 				Varyings o;
@@ -73,8 +70,6 @@ Shader "Unlit/Week006_WaterInBottle"
 				if (d < 0) {
 					discard;
 				}
-
-				float noise = MY_SAMPLE_TEXTURE2D(_NoiseTex, i.uv).r;
 
 				float2 r = _Refractive + _EdgeRefractive * saturate(d / _Edge);
 
