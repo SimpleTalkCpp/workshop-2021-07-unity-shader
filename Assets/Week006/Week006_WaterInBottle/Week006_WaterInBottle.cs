@@ -57,6 +57,7 @@ public class Week006_WaterInBottle : MonoBehaviour
 
 		if (waterInBottleMaterial) {
 			waterInBottleMaterial.SetVector("_WaterPlane", _WaterPlane);
+			waterInBottleMaterial.SetVector("_WaterPivot", waterPivot);
 		}
 	}
 }

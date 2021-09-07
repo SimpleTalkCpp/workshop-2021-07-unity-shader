@@ -8,6 +8,10 @@ Shader "Unlit/Week006_WaterInBottle"
 		_Refractive("_Refractive", Range(0, 1)) = 0.2 
 		_EdgeRefractive("_EdgeRefractive", Range(0, 1)) = 0.2 
 		_Edge("_Edge", Range(0.0001, 0.01)) = 0.0002 
+
+		[Toggle]
+		_DebugSurfaceUV("== Debug Surface UV ==", int) = 0
+		_UVChecker("UV Checker", 2D) = "white" {}
 	}
 	SubShader
 	{
@@ -46,10 +50,14 @@ Shader "Unlit/Week006_WaterInBottle"
 			float4 _BaseColor;
 			float4 _WaterSurfaceColor;
 			float4 _WaterPlane;
+			float4 _WaterPivot;
+			int _DebugSurfaceUV;
 
 			float _Edge;
 			float _Refractive;
 			float _EdgeRefractive;
+
+			MY_TEXTURE2D(_UVChecker);
 
 			Varyings vert (Attributes i)
 			{
@@ -77,6 +85,17 @@ Shader "Unlit/Week006_WaterInBottle"
 
 				float3 N = normalize(i.normalVS);
 				if (isFrontFace) {
+
+					if (_DebugSurfaceUV) {
+						float3 viewDir = normalize(i.positionWS - _WorldSpaceCameraPos);
+						float3 planeNormal = _WaterPlane.xyz;
+						float t = dot(_WorldSpaceCameraPos - _WaterPivot.xyz, planeNormal) / dot(viewDir, planeNormal);
+						float3 pt = t * viewDir - _WorldSpaceCameraPos;					
+						float3 uv = pt + _WaterPivot.xyz;
+						float4 uvChecker = MY_SAMPLE_TEXTURE2D(_UVChecker, uv.xz);
+						return uvChecker;
+					}
+
 					N = _WaterPlane.xyz;
 					color = _WaterSurfaceColor;
 				}

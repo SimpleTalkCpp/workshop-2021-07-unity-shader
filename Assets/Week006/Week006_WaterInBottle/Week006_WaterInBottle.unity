@@ -445,15 +445,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9778b4006fdb1f24ca941ed90c6473d9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.445
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9778b4006fdb1f24ca941ed90c6473d9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5452
+      value: 0.488
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9778b4006fdb1f24ca941ed90c6473d9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.376
+      value: -0.608
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9778b4006fdb1f24ca941ed90c6473d9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -508,7 +508,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waterInBottleMaterial: {fileID: 2100000, guid: f5edeacdb8a80874b814555ff1f734dc, type: 2}
   waterLevel: -0.01
-  waterPivot: {x: 0, y: 0.5352, z: 0.376}
-  _WaterPlane: {x: 0, y: 1, z: 0, w: 0.5352}
   damping: 0.95
   gravity: -9.8
