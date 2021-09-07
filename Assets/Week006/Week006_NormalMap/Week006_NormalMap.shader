@@ -120,7 +120,7 @@ Shader "Unlit/Week006_NormalMap"
 				return o;
 			}
 
-			float3 UnpackNormalDXT5nm (float4 packednormal)
+			float3 MyUnpackNormalDXT5nm (float4 packednormal)
 			{
 				float3 normal;
 				normal.xy = packednormal.wy * 2 - 1;
@@ -137,7 +137,7 @@ Shader "Unlit/Week006_NormalMap"
 				s.specular  = _Specular;
 				s.shininess = _Shininess;
 
-				float3 normalMap = UnpackNormalDXT5nm(MY_SAMPLE_TEXTURE2D(_NormalMap, i.uv));
+				float3 normalMap = MyUnpackNormalDXT5nm(MY_SAMPLE_TEXTURE2D(_NormalMap, i.uv));
 
 				float3 N = normalize(i.normalWS);
 				float3 T = normalize(i.tangentWS); // Tangent
