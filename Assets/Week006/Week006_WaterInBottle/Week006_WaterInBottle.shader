@@ -84,7 +84,6 @@ Shader "Unlit/Week006_WaterInBottle"
 				if (isFrontFace) {
 					N = _WaterPlane.xyz;
 					color = _WaterSurfaceColor;
-				} else {
 				}
 
 				float3 c = SampleSceneColor(screenUV + N * r);
