@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[CreateAssetMenu(menuName = "Week005/MyRenderPipelineAsset")]
+[CreateAssetMenu(menuName = "Rendering/Week005_MyRenderPipelineAsset")]
 public class Week005_MyRenderPipelineAsset : RenderPipelineAsset {
 
 	public enum GBufferDebugMode {
