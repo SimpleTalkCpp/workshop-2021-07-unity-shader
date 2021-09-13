@@ -21,6 +21,8 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 	public float gravity = -9.8f;
 	public float TimeScale = 1;
 
+	public GameObject ColliderPlane;
+
 	public ComputeShader computeShader;
 	public Material material;
 	public Mesh mesh;
@@ -34,7 +36,6 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 	[Header("-- Debug --")]
 	public int m_activeParticleCount;
 	public int m_particleIndex;
-	public int m_maxParticleCount;
 
 	static void ReleaseBuffer(ref ComputeBuffer buf) {
 		if (buf != null) {
@@ -90,15 +91,15 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 
 		if (!computeShader) return;
 
-		m_maxParticleCount = RoundUpToMultiple(MaxParticleCount, numThreads);
-		if (m_maxParticleCount <= 0) return;
+		int RoundUpParticleCount = RoundUpToMultiple(MaxParticleCount, numThreads);
+		if (RoundUpParticleCount <= 0) return;
 
-		_particlePosition = createComputeBuffer<Vector3>(m_maxParticleCount);
-		_particleVelocity = createComputeBuffer<Vector3>(m_maxParticleCount);
-		_particleLifespan = createComputeBuffer<Vector3>(m_maxParticleCount);
+		_particlePosition = createComputeBuffer<Vector3>(RoundUpParticleCount);
+		_particleVelocity = createComputeBuffer<Vector3>(RoundUpParticleCount);
+		_particleLifespan = createComputeBuffer<Vector3>(RoundUpParticleCount);
 
 		_particleNoise    = createComputeBuffer<Vector3>(_particleNoiseCount);
-		var noise = new Vector3[m_maxParticleCount];
+		var noise = new Vector3[_particleNoiseCount];
 		for (int i = 0; i < noise.Length; i++) {
 			noise[i] = Random.insideUnitSphere;
 		}
@@ -115,10 +116,10 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 		m_emitPerSecondRemain -= newParticleCount;
 
 		int newParticleStart = m_particleIndex;
-		int newParticleEnd   = (m_particleIndex + newParticleCount) % m_maxParticleCount;
+		int newParticleEnd   = (m_particleIndex + newParticleCount) % MaxParticleCount;
 
 		m_particleIndex += newParticleCount;
-		m_particleIndex %= m_maxParticleCount;
+		m_particleIndex %= MaxParticleCount;
 		m_activeParticleCount = Mathf.Max(m_particleIndex, m_activeParticleCount);
 
 		if (m_activeParticleCount <= 0) return;
@@ -142,6 +143,13 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 		computeShader.SetInt("m_activeParticleCount", m_activeParticleCount);
 		computeShader.SetInt("newParticleStart", newParticleStart);
 		computeShader.SetInt("newParticleEnd",   newParticleEnd);
+
+		if (ColliderPlane) {
+			var planeNormal = ColliderPlane.transform.up;
+			Vector4 plane = planeNormal;
+			plane.w = Vector3.Dot(ColliderPlane.transform.position, planeNormal);
+			computeShader.SetVector("ColliderPlane", plane);
+		}
 
 		computeShader.Dispatch(kernelIndex, RoundUpToMultiple(m_activeParticleCount, numThreads), 1, 1);
 	}

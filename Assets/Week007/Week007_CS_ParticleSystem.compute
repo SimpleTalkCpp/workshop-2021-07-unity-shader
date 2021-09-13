@@ -9,6 +9,8 @@ float initLifespanVariant;
 float deltaTime;
 float gravity;
 
+float4 ColliderPlane;
+
 int m_activeParticleCount;
 int newParticleStart;
 int newParticleEnd;
@@ -41,6 +43,31 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 	}
 	
 	_particleLifespan[i].x -= deltaTime;
-	_particleVelocity[i] += float3(0, gravity, 0) * deltaTime;
-	_particlePosition[i] += _particleVelocity[i] * deltaTime;
+
+	float3 oldVel = _particleVelocity[i];
+	float3 oldPos = _particlePosition[i];
+
+	float3 newVel = oldVel + float3(0, gravity, 0) * deltaTime;
+	float3 newPos = oldPos + newVel * deltaTime;
+
+	float oldD = dot(ColliderPlane.xyz, oldPos);
+	float newD = dot(ColliderPlane.xyz, newPos);
+
+	if (oldD * newD) {
+		float3 mv = newD - oldD;
+		float moveDis = length(mv);
+		float3 v = normalize(mv);
+
+		float planeDotV = dot(v, ColliderPlane.xyz);
+		if (planeDotV > 0.0001) {
+			float t = ColliderPlane.w / planeDotV;
+			float3 hitPos = oldD + v * t;
+
+			newVel = reflect(v, ColliderPlane.xyz);
+			newPos = hitPos + v * (moveDis - t);
+		}
+	}
+
+	_particlePosition[i] = newPos;
+	_particleVelocity[i] = newVel;
 }
