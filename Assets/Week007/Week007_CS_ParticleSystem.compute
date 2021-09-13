@@ -1,0 +1,46 @@
+#pragma kernel CSMain
+
+float3 initVelocity;
+float3 initVelocityVariant;
+
+float initLifespan;
+float initLifespanVariant;
+
+float deltaTime;
+float gravity;
+
+int m_activeParticleCount;
+int newParticleStart;
+int newParticleEnd;
+
+RWStructuredBuffer<float3> _particleNoise;
+int _particleNoiseCount;
+
+RWStructuredBuffer<float3> _particlePosition;
+RWStructuredBuffer<float3> _particleVelocity;
+RWStructuredBuffer<float2> _particleLifespan; // x: remain, y: total
+
+float3 getNoise(int i) {
+	return _particleNoise[(uint)i % (uint)_particleNoiseCount];
+}
+
+[numthreads(8, 1, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+	int i = (int)id.x;
+
+	if (i >= m_activeParticleCount) return;
+
+	if ((newParticleEnd > newParticleStart && i >= newParticleStart && i < newParticleEnd)
+	 || (newParticleEnd < newParticleStart && i < newParticleEnd))
+	{
+	// new particle
+		float3 noise = getNoise(i);
+		_particlePosition[i] = float3(0,0,0);
+		_particleVelocity[i] = initVelocity + initVelocityVariant * noise;
+		_particleLifespan[i] = initLifespan + initLifespanVariant * noise.x;
+	}
+	
+	_particleLifespan[i].x -= deltaTime;
+	_particleVelocity[i] += float3(0, gravity, 0) * deltaTime;
+	_particlePosition[i] += _particleVelocity[i] * deltaTime;
+}
