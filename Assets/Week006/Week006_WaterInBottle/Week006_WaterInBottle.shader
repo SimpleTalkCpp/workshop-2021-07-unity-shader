@@ -100,7 +100,7 @@ Shader "Unlit/Week006_WaterInBottle"
 					color = _WaterSurfaceColor;
 				}
 
-				float3 c = SampleSceneColor(screenUV + N * N * r);
+				float3 c = SampleSceneColor(screenUV + (N * N).xy * r);
 				c = lerp(c, color.rgb, color.a);
 				return float4(c, 1);
 			}
