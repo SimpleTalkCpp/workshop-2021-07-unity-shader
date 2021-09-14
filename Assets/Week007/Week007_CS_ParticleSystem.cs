@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 public class Week007_CS_ParticleSystem : MonoBehaviour
 {
-	const int numThreads = 8;
+	const int numThreads = 64;
 	public int MaxParticleCount = 100;
 
 	public float emitPerSecond = 1;
@@ -20,6 +20,7 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 
 	public float gravity = -9.8f;
 	public float TimeScale = 1;
+	public float bounciness = 0.75f;
 
 	public GameObject ColliderPlane;
 
@@ -31,7 +32,7 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 	ComputeBuffer _particleVelocity;
 	ComputeBuffer _particleLifespan;
 	ComputeBuffer _particleNoise;
-	const int _particleNoiseCount = 512;
+	const int _particleNoiseCount = 2048;
 
 	[Header("-- Debug --")]
 	public int m_activeParticleCount;
@@ -96,8 +97,7 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 
 		_particlePosition = createComputeBuffer<Vector3>(RoundUpParticleCount);
 		_particleVelocity = createComputeBuffer<Vector3>(RoundUpParticleCount);
-		_particleLifespan = createComputeBuffer<Vector3>(RoundUpParticleCount);
-
+		_particleLifespan = createComputeBuffer<Vector2>(RoundUpParticleCount);
 		_particleNoise    = createComputeBuffer<Vector3>(_particleNoiseCount);
 		var noise = new Vector3[_particleNoiseCount];
 		for (int i = 0; i < noise.Length; i++) {
@@ -122,7 +122,8 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 		m_particleIndex %= MaxParticleCount;
 		m_activeParticleCount = Mathf.Max(m_particleIndex, m_activeParticleCount);
 
-		if (m_activeParticleCount <= 0) return;
+		int threadGroup = (m_activeParticleCount + numThreads - 1) / numThreads;
+		if (threadGroup <= 0) return;
 
 		int kernelIndex = computeShader.FindKernel("CSMain");
 
@@ -132,7 +133,9 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 		computeShader.SetFloat("initLifespanVariant", initLifespanVariant);
 
 		computeShader.SetFloat("deltaTime", Time.deltaTime * TimeScale);
+		computeShader.SetVector("emitterPos", transform.position);
 		computeShader.SetFloat("gravity", gravity);
+		computeShader.SetFloat("bounciness", bounciness);
 
 		computeShader.SetBuffer(kernelIndex, "_particlePosition", _particlePosition);
 		computeShader.SetBuffer(kernelIndex, "_particleVelocity", _particleVelocity);
@@ -151,7 +154,7 @@ public class Week007_CS_ParticleSystem : MonoBehaviour
 			computeShader.SetVector("ColliderPlane", plane);
 		}
 
-		computeShader.Dispatch(kernelIndex, RoundUpToMultiple(m_activeParticleCount, numThreads), 1, 1);
+		computeShader.Dispatch(kernelIndex, threadGroup, 1, 1);
 	}
 
 	void OnExecuteDraw(ScriptableRenderContext context, ref RenderingData renderingData) {

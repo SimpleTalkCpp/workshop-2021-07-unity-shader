@@ -8,8 +8,10 @@ float initLifespanVariant;
 
 float deltaTime;
 float gravity;
+float bounciness;
 
 float4 ColliderPlane;
+float3 emitterPos;
 
 int m_activeParticleCount;
 int newParticleStart;
@@ -26,7 +28,7 @@ float3 getNoise(int i) {
 	return _particleNoise[(uint)i % (uint)_particleNoiseCount];
 }
 
-[numthreads(8, 1, 1)]
+[numthreads(64, 1, 1)]
 void CSMain (uint3 id : SV_DispatchThreadID) {
 	int i = (int)id.x;
 
@@ -37,9 +39,11 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 	{
 	// new particle
 		float3 noise = getNoise(i);
-		_particlePosition[i] = float3(0,0,0);
+		_particlePosition[i] = emitterPos;
 		_particleVelocity[i] = initVelocity + initVelocityVariant * noise;
-		_particleLifespan[i] = initLifespan + initLifespanVariant * noise.x;
+
+		float life = initLifespan + initLifespanVariant * noise.x;
+		_particleLifespan[i] = life.xx;
 	}
 	
 	_particleLifespan[i].x -= deltaTime;
@@ -50,22 +54,24 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 	float3 newVel = oldVel + float3(0, gravity, 0) * deltaTime;
 	float3 newPos = oldPos + newVel * deltaTime;
 
-	float oldD = dot(ColliderPlane.xyz, oldPos);
-	float newD = dot(ColliderPlane.xyz, newPos);
+	// collision
+	float planeD = ColliderPlane.w;
+		float3 N = ColliderPlane.xyz;
 
-	if (oldD * newD) {
-		float3 mv = newD - oldD;
-		float moveDis = length(mv);
-		float3 v = normalize(mv);
+	float oldD = dot(N, oldPos);
+	float newD = dot(N, newPos);
 
-		float planeDotV = dot(v, ColliderPlane.xyz);
-		if (planeDotV > 0.0001) {
-			float t = ColliderPlane.w / planeDotV;
-			float3 hitPos = oldD + v * t;
+	if ((oldD - planeD) * (newD - planeD) < 0) {
+		float3 moved = newPos - oldPos;
+		float movedDis = length(moved);
+		float3 V = moved / movedDis;
 
-			newVel = reflect(v, ColliderPlane.xyz);
-			newPos = hitPos + v * (moveDis - t);
-		}
+		float VN = dot(V, N);
+		float t = (oldD + planeD) / VN;
+		float3 hitPos = oldPos + V * t;
+
+		newVel = reflect(newVel, N) * bounciness;
+		newPos = hitPos + newVel * deltaTime * (movedDis - t);
 	}
 
 	_particlePosition[i] = newPos;
