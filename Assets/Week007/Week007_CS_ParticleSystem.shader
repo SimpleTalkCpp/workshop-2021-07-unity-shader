@@ -71,7 +71,7 @@ Shader "Unlit/Week07_CS_ParticleSystem"
 				uint ci = instance_id % 8;
 				float3 color = saturate(float3(ci & 1, ci & 2, ci & 4));
 
-				o.color = _Color * float4(1,1,1, alpha);
+				o.color = _Color * float4(color, alpha);
 				return o;
 			}
 

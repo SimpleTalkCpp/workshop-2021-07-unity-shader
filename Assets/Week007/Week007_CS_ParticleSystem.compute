@@ -67,7 +67,7 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 		float3 V = moved / movedDis;
 
 		float VN = dot(V, N);
-		float t = (oldD + planeD) / VN;
+		float t = (oldD - planeD) / VN;
 		float3 hitPos = oldPos + V * t;
 
 		newVel = reflect(newVel, N) * bounciness;
